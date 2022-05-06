@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Card from "../../components/Card";
+import Pagination from "../../components/Pagination";
 
 const QuestionsContainer = styled.div`
   display: flex;
@@ -17,22 +19,29 @@ const CardLink = styled.a`
 export default function Questions() {
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
+
+  const router = useRouter();
+  const { page } = router.query;
 
   useEffect(() => {
     async function fetchData() {
       const response = await fetch(
-        "https://api.stackexchange.com/2.2/questions?site=stackoverflow&order=desc&sort=hot&tagged=reactjs"
+        `https://api.stackexchange.com/2.2/questions?${
+          page ? `page=${page}&` : ""
+        }site=stackoverflow&order=desc&sort=hot&tagged=reactjs`
       );
       const result = await response.json();
 
       if (result) {
         setQuestions(result.items);
+        setHasMore(result.has_more);
         setLoading(false);
       }
     }
 
     fetchData();
-  }, []);
+  }, [page]);
 
   return (
     <QuestionsContainer>
@@ -56,6 +65,7 @@ export default function Questions() {
               </CardLink>
             </Link>
           ))}
+          <Pagination currentPage={parseInt(page) || 1} hasMore={hasMore} />
         </>
       )}
     </QuestionsContainer>

@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import styled from "styled-components";
 import Card from "../../components/Card";
@@ -13,34 +14,6 @@ const QuestionsContainer = styled.div`
 const CardLink = styled.a`
   text-decoration: none;
 `;
-
-function Questions({ questions, hasMore, page }) {
-  return (
-    <QuestionsContainer>
-      <h2>Questions</h2>
-
-      <>
-        {questions &&
-          questions.map((question) => (
-            <Link
-              key={question.question_id}
-              href={`/questions/${question.question_id}`}
-              passHref
-            >
-              <CardLink>
-                <Card
-                  title={question.title}
-                  views={question.view_count}
-                  answers={question.answer_count}
-                />
-              </CardLink>
-            </Link>
-          ))}
-        <Pagination currentPage={parseInt(page) || 1} hasMore={hasMore} />
-      </>
-    </QuestionsContainer>
-  );
-}
 
 export async function getServerSideProps(context) {
   const { page } = context.query;
@@ -62,4 +35,35 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default Questions;
+export default function Questions({ questions, hasMore, page }) {
+  return (
+    <>
+      <Head>
+        <title>Questions</title>
+      </Head>
+      <QuestionsContainer>
+        <h2>Questions</h2>
+
+        <>
+          {questions &&
+            questions.map((question) => (
+              <Link
+                key={question.question_id}
+                href={`/questions/${question.question_id}`}
+                passHref
+              >
+                <CardLink>
+                  <Card
+                    title={question.title}
+                    views={question.view_count}
+                    answers={question.answer_count}
+                  />
+                </CardLink>
+              </Link>
+            ))}
+          <Pagination currentPage={parseInt(page) || 1} hasMore={hasMore} />
+        </>
+      </QuestionsContainer>
+    </>
+  );
+}

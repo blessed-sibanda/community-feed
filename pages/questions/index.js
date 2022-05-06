@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Card from "../../components/Card";
@@ -7,6 +8,10 @@ const QuestionsContainer = styled.div`
   justify-content: space-between;
   flex-direction: column;
   margin: 5%;
+`;
+
+const CardLink = styled.a`
+  text-decoration: none;
 `;
 
 export default function Questions() {
@@ -28,6 +33,7 @@ export default function Questions() {
 
     fetchData();
   }, []);
+
   return (
     <QuestionsContainer>
       <h2>Questions</h2>
@@ -36,12 +42,19 @@ export default function Questions() {
       ) : (
         <>
           {questions.map((question) => (
-            <Card
+            <Link
               key={question.question_id}
-              title={question.title}
-              views={question.view_count}
-              answers={question.answer_count}
-            />
+              href={`/questions/${question.question_id}`}
+              passHref
+            >
+              <CardLink>
+                <Card
+                  title={question.title}
+                  views={question.view_count}
+                  answers={question.answer_count}
+                />
+              </CardLink>
+            </Link>
           ))}
         </>
       )}
